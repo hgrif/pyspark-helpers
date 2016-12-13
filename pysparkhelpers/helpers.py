@@ -20,6 +20,7 @@ def udaf(by, func, *args, **kwargs):
     :param kwargs: Keyword arguments (optional):
         * n_partitions: Number of partitions to use for the rdd.groupby
         * schema: Schema for PySpark DataFrame
+        * other kwargs are passed to func
     :return PySpark DataFrame with aggregates
 
     Note:
@@ -31,7 +32,8 @@ def udaf(by, func, *args, **kwargs):
     grouped = _group_data(by, *args, n_partitions=n_partitions)
     result = (
         grouped
-        .flatMap(lambda x: _to_rows(func(*map(_to_pandas, _flatten(x[1]))),
+        .flatMap(lambda x: _to_rows(func(*map(_to_pandas, _flatten(x[1])),
+                                         **kwargs),
                                     by, x[0]))
     )
     return result.toDF(schema)

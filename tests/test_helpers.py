@@ -31,6 +31,19 @@ class TestUdaf(object):
         )
         assert_frame_equal(expected, returned_rdd)
 
+        def func_kwargs(x, addition):
+            s = x.sum()
+            s['values'] += addition
+            return s
+
+        expected_kwargs = pd.DataFrame({'user': ['a', 'b'], 'values': [5, 6]})
+        returned_kwargs = (
+            helpers.udaf('user', func_kwargs, sdf, addition=2).toPandas()
+            .sort_values('user')
+            .reset_index(drop=True)
+        )
+        assert_frame_equal(expected_kwargs, returned_kwargs)
+
     @pytest.mark.usefixtures("hive_context")
     def test_multiple(self, hive_context):
         df_a = pd.DataFrame({'user': ['a', 'a', 'a', 'b'],
