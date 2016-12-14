@@ -82,13 +82,18 @@ def _to_pandas(x):
 
 def _to_rows(df, by, k):
     """Convert to a list of Row objects."""
+    if isinstance(by, str):
+        by, k = [by], [k]
     if isinstance(df, pd.Series):
         df = df.to_frame().T
     if isinstance(df, pd.DataFrame):
-        df[by] = k
-        df.columns = map(str, df.columns)
+        for col, val in zip(by, k):
+            df[col] = val
+        df.columns = map(str, df.columns)  # Else Row() will fail
         rows = (sql.Row(**OrderedDict(sorted(x.items())))
                 for x in df.to_dict(orient='records'))
     else:
-        rows = (sql.Row(**OrderedDict([(by, k), ('value', df)])),)
+        # It's hopefully only a value.
+        result = ((k, v) for k, v in zip(by + ['value'], k + [df]))
+        rows = (sql.Row(**OrderedDict(sorted(result))),)
     return rows
