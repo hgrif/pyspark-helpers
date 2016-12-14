@@ -10,7 +10,7 @@ This is a (quick and dirty) way to convert your pandas functions into a parallel
 
 PySpark currently only supports user defined aggregated functions (UDAFs) if they're composed of PySpark functions.
 This works great if your algorithm can be expressed in those functions but it limits you if you need to do more advanced, unsupported stuff.
-Also, work is often prototyped in pandas on smallish data (e.g. data for 1 customer) and has to be parallelized on biggish data (e.g. data for 1 million customers).
+Also, work is often prototyped in pandas on smallish data (e.g. data for 1 user) and has to be parallelized on biggish data (e.g. data for 1 million users).
 
 Say you get a slice of data from your big PySpark DataFrame, save it locally and starting prototyping a function with Pandas to comput profit:
 
@@ -41,7 +41,7 @@ Just plug everything in `udaf()`:
 import pysparkhelpers
 
 
-profit_sdf = pysparkhelpers.udaf('user', profit, money_sdf, multiplier_sdf)
+p_sdf = pysparkhelpers.udaf('user', profit, money_sdf, multiplier_sdf)
 ```
 
 More profit!
